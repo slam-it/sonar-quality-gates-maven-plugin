@@ -9,7 +9,15 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
+    <scm>
+        <connection>scm:git:git://github.com/slam-it/sonar-quality-gates-maven-plugin.git</connection>
+        <developerConnection>scm:git:git://github.com/slam-it/sonar-quality-gates-maven-plugin.git</developerConnection>
+        <url>https://github.com/slam-it/sonar-quality-gates-maven-plugin.git</url>
+    </scm>
+
     <properties>
+        <coveralls-maven-plugin.version>4.1.0</coveralls-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.7.6.201602180812</jacoco-maven-plugin.version>
         <jackson-annotations.version>2.7.1</jackson-annotations.version>
         <jackson-databind.version>2.7.1-1</jackson-databind.version>
         <javax.inject.version>1</javax.inject.version>
@@ -113,9 +121,14 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+            </plugin>
+            <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
-                <version>4.1.0</version>
+                <version>${coveralls-maven-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
