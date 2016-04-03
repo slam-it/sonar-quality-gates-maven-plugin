@@ -1,0 +1,4 @@
+{
+  "err_code": 404,
+  "err_msg": "Resource not found: nl.slam-it.foo:no-existing-project"
+}

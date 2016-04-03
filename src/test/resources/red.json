@@ -1,0 +1,10 @@
+[
+  {
+    "ds": "Critical issues != 0, Coverage < 75",
+    "id": "2385562",
+    "n": "Red",
+    "rk": "nl.slam-it.foo:foobar",
+    "c": "Alert",
+    "dt": "2016-03-01T08:43:13+0100"
+  }
+]
