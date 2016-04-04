@@ -11,7 +11,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>nl.rabobank.maven.plugin</groupId>
+                <groupId>nl.slam-it.maven</groupId>
                 <artifactId>sonar-quality-gates-maven-plugin</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <configuration/>
