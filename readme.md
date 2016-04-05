@@ -20,7 +20,7 @@ $ mvn sonar-quality-gates:inspect
  * The Sonar host url
  * Default: `http://localhost:9000`
 
-*Note:* `sonarHostUrl` property is optional and will be inferred from the `sonar.host.url` property (in the pom.xml or as a property in a [settings.xml profile](#Example Sonar profile (settings.xml))
+*Note:* `sonarHostUrl` property is optional and will be inferred from the `sonar.host.url` property (in the pom.xml or as a property in a [settings.xml profile](#Example Sonar profile (settings.xml)) if not specified
 
 ### Example
 
