@@ -6,9 +6,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
-import java.util.Scanner;
-
-import nl.slam_it.maven.plugin.model.Error;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,17 +54,4 @@ public class SonarObjectMapperTest {
 
         sonarObjectMapper.writeValue("value");
     }
-
-    private String getResponse(final String file) {
-        final StringBuilder builder = new StringBuilder();
-
-        try (final Scanner scanner = new Scanner(this.getClass().getClassLoader().getResourceAsStream(file))) {
-            while (scanner.hasNextLine()) {
-                builder.append(scanner.nextLine());
-            }
-        }
-
-        return builder.toString();
-    }
-
 }

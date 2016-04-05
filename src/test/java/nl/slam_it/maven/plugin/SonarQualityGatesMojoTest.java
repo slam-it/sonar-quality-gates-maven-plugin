@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.mashape.unirest.http.Unirest;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -77,6 +78,16 @@ public class SonarQualityGatesMojoTest {
             "Sonar responded with an error message: Resource not found: nl.slam-it.foo:no-existing-project");
 
         sonarEventHandler.setResponse(404, getResponse("error.json"));
+
+        mojo.execute();
+    }
+
+    @Test
+    public void unirestException() throws MojoFailureException, MojoExecutionException {
+        exception.expect(MojoFailureException.class);
+        exception.expectMessage("Could not execute sonar-quality-gates-plugin");
+
+        Unirest.setHttpClient(null);
 
         mojo.execute();
     }
