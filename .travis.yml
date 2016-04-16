@@ -3,9 +3,10 @@ language: java
 jdk:
   - oraclejdk7
 
-after_success:
-  - mvn clean cobertura:cobertura coveralls:report
+before_install:
   - curl https://www.jpm4j.org/install/script | sh
   - jpm install com.codacy:codacy-coverage-reporter:assembly
-  - export CODACY_PROJECT_TOKEN=9612a19db312440d932a43d642355739
+
+after_success:
+  - mvn clean cobertura:cobertura coveralls:report
   - codacy-coverage-reporter -l Java -r coverage.xml
