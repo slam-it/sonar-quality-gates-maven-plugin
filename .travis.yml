@@ -4,8 +4,9 @@ jdk:
   - oraclejdk7
 
 before_install:
-  - sudo curl https://www.jpm4j.org/install/script | sh
-  - jpm install com.codacy:codacy-coverage-reporter:assembly
+  - curl -sL http://bit.ly/jpm4j >jpm4j.jar
+  - sudo java -jar jpm4j.jar -g init
+  - sudo jpm install com.codacy:codacy-coverage-reporter:assembly
 
 after_success:
   - mvn clean cobertura:cobertura coveralls:report
