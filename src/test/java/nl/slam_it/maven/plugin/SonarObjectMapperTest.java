@@ -22,7 +22,7 @@ public class SonarObjectMapperTest {
     private SonarObjectMapper sonarObjectMapper;
 
     @Before
-    public void setup() {
+    public void setUp() {
         initMocks(this);
         sonarObjectMapper = new SonarObjectMapper(objectMapper);
     }

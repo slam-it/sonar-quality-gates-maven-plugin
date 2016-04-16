@@ -23,7 +23,7 @@ public class SonarObjectMapper implements ObjectMapper {
         try {
             return jacksonObjectMapper.readValue(value, valueType);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new SonarObjectMapperException(e);
         }
     }
 
@@ -32,7 +32,7 @@ public class SonarObjectMapper implements ObjectMapper {
         try {
             return jacksonObjectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new SonarObjectMapperException(e);
         }
     }
 }
