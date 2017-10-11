@@ -1,14 +1,9 @@
 package nl.slam_it.maven.plugin;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.mashape.unirest.http.Unirest;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -21,10 +16,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.mashape.unirest.http.Unirest;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class SonarQualityGatesMojoTest {
 
@@ -43,13 +43,15 @@ public class SonarQualityGatesMojoTest {
     public void setUp() throws Exception {
         sonarEventHandler = new SonarEventHandler();
 
-        server = HttpServer.create(new InetSocketAddress(9000), 0);
+        server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/", sonarEventHandler);
         server.setExecutor(null);
         server.start();
 
         project = rule.readMavenProject(resources.getBasedir(""));
         mojo = rule.lookupConfiguredMojo(project, "inspect");
+
+        project.getProperties().put("sonar.host.url", "http://localhost:" + server.getAddress().getPort());
     }
 
     @After
@@ -98,8 +100,7 @@ public class SonarQualityGatesMojoTest {
     @Test
     public void error() throws Exception {
         exception.expect(MojoFailureException.class);
-        exception.expectMessage(
-            "Sonar responded with an error message: Resource not found: nl.slam-it.foo:no-existing-project");
+        exception.expectMessage("Sonar responded with an error message: Resource not found: nl.slam-it.foo:no-existing-project");
 
         try {
             sonarEventHandler.setResponse(404, getResponse("error.json"));
@@ -119,16 +120,8 @@ public class SonarQualityGatesMojoTest {
         mojo.execute();
     }
 
-    private String getResponse(final String file) {
-        final StringBuilder builder = new StringBuilder();
-
-        try (final Scanner scanner = new Scanner(this.getClass().getClassLoader().getResourceAsStream(file))) {
-            while (scanner.hasNextLine()) {
-                builder.append(scanner.nextLine());
-            }
-        }
-
-        return builder.toString();
+    private String getResponse(String file) {
+        return new Scanner(getClass().getClassLoader().getResourceAsStream(file)).useDelimiter("\\Z").next();
     }
 
     private static final class SonarEventHandler implements HttpHandler {
@@ -141,7 +134,7 @@ public class SonarQualityGatesMojoTest {
         public void handle(final HttpExchange httpExchange) throws IOException {
             resource = getResource(httpExchange.getRequestURI().getQuery());
 
-            try (final OutputStream responseBody = httpExchange.getResponseBody()) {
+            try (OutputStream responseBody = httpExchange.getResponseBody()) {
                 httpExchange.sendResponseHeaders(status, response.length());
                 responseBody.write(response.getBytes());
             }
@@ -157,7 +150,7 @@ public class SonarQualityGatesMojoTest {
         }
 
         private String getResource(final String query) {
-            final Matcher matcher = RESOURCE_PATTERN.matcher(query);
+            Matcher matcher = RESOURCE_PATTERN.matcher(query);
 
             if (matcher.matches()) {
                 return matcher.group(1);

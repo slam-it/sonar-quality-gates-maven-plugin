@@ -1,12 +1,12 @@
 package nl.slam_it.maven.plugin;
-import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mashape.unirest.http.ObjectMapper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mashape.unirest.http.ObjectMapper;
+import java.io.IOException;
 
 @Named
 @Singleton
@@ -14,12 +14,12 @@ public class SonarObjectMapper implements ObjectMapper {
     private final com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper;
 
     @Inject
-    public SonarObjectMapper(final com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper) {
+    public SonarObjectMapper(com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper) {
         this.jacksonObjectMapper = jacksonObjectMapper;
     }
 
     @Override
-    public <T> T readValue(final String value, final Class<T> valueType) {
+    public <T> T readValue(String value, Class<T> valueType) {
         try {
             return jacksonObjectMapper.readValue(value, valueType);
         } catch (IOException e) {
@@ -28,7 +28,7 @@ public class SonarObjectMapper implements ObjectMapper {
     }
 
     @Override
-    public String writeValue(final Object value) {
+    public String writeValue(Object value) {
         try {
             return jacksonObjectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {

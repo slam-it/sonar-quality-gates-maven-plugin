@@ -1,17 +1,10 @@
 package nl.slam_it.maven.plugin;
 
-import static java.util.Arrays.asList;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-
-import javax.inject.Inject;
-
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import nl.slam_it.maven.plugin.model.Error;
 import nl.slam_it.maven.plugin.model.Event;
-import nl.slam_it.maven.plugin.model.Status;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,9 +13,16 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
+
+import static com.mashape.unirest.http.Unirest.setHttpClient;
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static nl.slam_it.maven.plugin.model.Status.OK;
+import static org.apache.http.impl.client.HttpClients.createDefault;
 
 @Mojo(name = "inspect")
 public class SonarQualityGatesMojo extends AbstractMojo {
@@ -44,30 +44,27 @@ public class SonarQualityGatesMojo extends AbstractMojo {
     private String sonarHostUrl;
 
     @Inject
-    public SonarQualityGatesMojo(final SonarObjectMapper sonarObjectMapper) {
-        Unirest.setHttpClient(HttpClients.createDefault());
+    public SonarQualityGatesMojo(SonarObjectMapper sonarObjectMapper) {
+        setHttpClient(createDefault());
         this.sonarObjectMapper = sonarObjectMapper;
     }
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        final MavenProject topLevelProject = session.getTopLevelProject();
-        final String sonarKey = getSonarKey(topLevelProject);
-        final String sonarHostUrl = getSonarHostUrl(topLevelProject.getProperties());
-        final String sonarApiUrl = String.format(SONAR_API_URL, sonarHostUrl, sonarKey);
-        final List<Event> events = retrieveSonarEvents(sonarApiUrl);
+        MavenProject topLevelProject = session.getTopLevelProject();
+        List<Event> events = retrieveSonarEvents(format(SONAR_API_URL, getSonarHostUrl(topLevelProject.getProperties()), getSonarKey(topLevelProject)));
 
-        if (!events.isEmpty() && events.get(FIRST).getStatus() != Status.OK) {
+        if (!events.isEmpty() && events.get(FIRST).getStatus() != OK) {
             throw new MojoExecutionException(events.get(FIRST).getDescription());
         }
     }
 
-    private List<Event> retrieveSonarEvents(final String url) throws MojoFailureException {
+    private List<Event> retrieveSonarEvents(String url) throws MojoFailureException {
         try {
-            final HttpResponse<String> response = Unirest.get(url).asString();
-            final String body = response.getBody();
+            HttpResponse<String> response = Unirest.get(url).asString();
+            String body = response.getBody();
 
             if (response.getStatus() != STATUS_CODE_OK) {
-                final String errorMessage = sonarObjectMapper.readValue(body, Error.class).getMessage();
+                String errorMessage = sonarObjectMapper.readValue(body, Error.class).getMessage();
                 throw new MojoFailureException("Sonar responded with an error message: " + errorMessage);
             }
 
@@ -79,12 +76,15 @@ public class SonarQualityGatesMojo extends AbstractMojo {
         }
     }
 
-    private String getSonarHostUrl(final Properties properties) {
-        return sonarHostUrl != null ? sonarHostUrl
-            : properties.containsKey(SONAR_HOST_URL) ? properties.getProperty(SONAR_HOST_URL) : SONAR_DEFAULT_HOST_URL;
+    private String getSonarHostUrl(Properties properties) {
+        if (sonarHostUrl != null) {
+            return sonarHostUrl;
+        }
+
+        return properties.containsKey(SONAR_HOST_URL) ? properties.getProperty(SONAR_HOST_URL) : SONAR_DEFAULT_HOST_URL;
     }
 
-    private String getSonarKey(final MavenProject pom) {
+    private String getSonarKey(MavenProject pom) {
         if (pom.getModel().getProperties().containsKey(SONAR_PROJECT_KEY)) {
             return pom.getModel().getProperties().getProperty(SONAR_PROJECT_KEY);
         }

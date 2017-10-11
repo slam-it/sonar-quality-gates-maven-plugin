@@ -10,7 +10,7 @@ public class Error {
     private final String message;
 
     @JsonCreator
-    public Error(@JsonProperty("err_msg") final String message) {
+    public Error(@JsonProperty("err_msg") String message) {
         this.message = message;
     }
 
