@@ -14,8 +14,6 @@ import static nl.slam_it.maven.plugin.model.Status.OK;
  * Deserialize the event name to a @{link Status}.
  */
 public class EventNameDeserializer extends JsonDeserializer<Status> {
-    private static final String GREEN = "Green";
-
     /**
      * If the event name starts with the word 'Green' {@code Status.OK} is returned; otherwise {@code Status.ERROR} is
      * returned.
@@ -29,10 +27,6 @@ public class EventNameDeserializer extends JsonDeserializer<Status> {
      */
     @Override
     public Status deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-        if (!parser.getValueAsString().startsWith(GREEN)) {
-            return ERROR;
-        }
-
-        return OK;
+        return parser.getValueAsString().startsWith("Green") ? OK : ERROR;
     }
 }
