@@ -1,4 +1,4 @@
-package nl.slam_it.maven.plugin.model;
+package com.hack23.maven.plugin.model;
 
 public class Conditions
 {
