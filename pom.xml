@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jackson-annotations.version>2.7.1</jackson-annotations.version>
-        <jackson-databind.version>2.7.1-1</jackson-databind.version>
+        <jackson-databind.version>2.9.10.1</jackson-databind.version>
         <javax.inject.version>1</javax.inject.version>
         <junit.version>4.12</junit.version>
         <maven.version>3.3.9</maven.version>
