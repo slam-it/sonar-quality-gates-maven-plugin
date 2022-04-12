@@ -18,8 +18,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <jackson-annotations.version>2.9.10.6</jackson-annotations.version>
-        <jackson-databind.version>2.9.10.6</jackson-databind.version>
+        <jackson-annotations.version>2.13.2.2</jackson-annotations.version>
+        <jackson-databind.version>2.13.2.2</jackson-databind.version>
         <javax.inject.version>1</javax.inject.version>
         <junit.version>4.13.1</junit.version>
         <maven.version>3.3.9</maven.version>
